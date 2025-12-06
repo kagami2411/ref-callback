@@ -1,6 +1,13 @@
 <html>
   <body>
-    <h1>識別子を受け取りました</h1>
-    <p>ここにLINEから情報が返ってくる</p>
+    <h1>LINEログイン成功</h1>
+    <p>あなたの識別子が返ってきました。</p>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+
+      document.write("<h3>code（識別子）:</h3>" + code);
+    </script>
   </body>
 </html>
