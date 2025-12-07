@@ -1,53 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <meta charset="UTF-8" />
+    <title>PokeLinker</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <h1>Welcome to PokeLinker!</h1>
-  <img id="icon" width="100" style="border-radius: 50%; background:#ddd;" />
-  <p id="Name">Loading...</p>
+    <h1 id="welcome">Welcome to PokeLinker!!</h1>
+    <img id="icon" width="100" style="border-radius: 50%; background:#ddd;" />
+    <p id="status">Loading...</p>
+    <button id="profileBtn">Show Profile</button>
 
-  <script type="module">
-    // Firebase SDK 読み込み
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script>
+        // ==============================
+        // Firebase設定（あなたのプロジェクト専用）
+        // ==============================
+        const firebaseConfig = {
+            apiKey: "AIzaSyD2tvHGdfc1H39WOh4UoErrYi4xLLWShC",
+            authDomain: "poke-linker.firebaseapp.com",
+            projectId: "poke-linker",
+            storageBucket: "poke-linker.firebasestorage.app",
+            messagingSenderId: "1061600557288",
+            appId: "1:1061600557288:web:9cab73d6f16796ca22f15d"
+        };
 
-    // ★あなたの Firebase 設定（自動生成されたもの）
-    const firebaseConfig = {
-      apiKey: "AIzaSyD2tvHGdffc1H39WOh4UoErrYi4xLLWShc",
-      authDomain: "poke-linker.firebaseapp.com",
-      projectId: "poke-linker",
-      storageBucket: "poke-linker.firebasestorage.app",
-      messagingSenderId: "1061600557288",
-      appId: "1:1061600557288:web:9cab73d6f16796ca22f15d"
-    };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    // Firebase 初期化
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        // ==============================
+        // LIFF初期化
+        // ==============================
+        async function main() {
+            await liff.init({ liffId: "2008639538-gRDmzZy6" });
 
-    async function main() {
-      await liff.init({ liffId: "2008639538-rGDmzZy6" });
+            if (!liff.isLoggedIn()) {
+                liff.login();
+                return;
+            }
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
+            const profile = await liff.getProfile();
 
-      const profile = await liff.getProfile();
-      document.getElementById("Name").textContent = profile.displayName;
-      document.getElementById("icon").src = profile.pictureUrl;
+            document.getElementById("welcome").innerHTML =
+                `Welcome to PokeLinker, ${profile.displayName}!!`;
 
-      await setDoc(doc(db, "users", profile.userId), {
-        name: profile.displayName,
-        icon: profile.pictureUrl
-      });
+            document.getElementById("icon").src = profile.pictureUrl;
+            document.getElementById("status").innerText = "Your profile loaded!";
 
-      console.log("Firebase save OK!");
-    }
-    main();
-  </script>
+            saveUserProfile(profile); // Firestore 保存処理
+        }
+
+        // ==============================
+        // Firestore にユーザーデータ保存
+        // ==============================
+        async function saveUserProfile(profile) {
+            const userRef = db.collection("users").doc(profile.userId);
+
+            await userRef.set({
+                name: profile.displayName,
+                icon: profile.pictureUrl
+            }, { merge: true });
+        }
+
+        // ==============================
+        // プロフィール見るボタン
+        // ==============================
+        document.getElementById("profileBtn").addEventListener("click", () => {
+            alert("名前: " + document.getElementById("welcome").innerText);
+        });
+
+        main();
+    </script>
+
 </body>
 </html>
 
