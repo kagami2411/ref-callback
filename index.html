@@ -1,72 +1,53 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokeLinker</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 40px;
-        }
-        #icon {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: #eee;
-            margin: 20px auto;
-        }
-        button {
-            padding: 12px 24px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            background: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        button:disabled {
-            background: #aaa;
-        }
-    </style>
-
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-    <h1 id="welcome">Welcome to PokeLinker!!</h1>
+  <h1>Welcome to PokeLinker!</h1>
+  <img id="icon" width="100" style="border-radius: 50%; background:#ddd;" />
+  <p id="Name">Loading...</p>
 
-    <img id="icon" src="" alt="User Icon" />
+  <script type="module">
+    // Firebase SDK 読み込み
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    <p id="status">Loading...</p>
+    // ★あなたの Firebase 設定（自動生成されたもの）
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2tvHGdffc1H39WOh4UoErrYi4xLLWShc",
+      authDomain: "poke-linker.firebaseapp.com",
+      projectId: "poke-linker",
+      storageBucket: "poke-linker.firebasestorage.app",
+      messagingSenderId: "1061600557288",
+      appId: "1:1061600557288:web:9cab73d6f16796ca22f15d"
+    };
 
-    <button id="profileBtn" disabled>Show Profile</button>
+    // Firebase 初期化
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    <script>
-        async function main() {
-            // ★ あなたの LIFF ID をセット済み
-            await liff.init({ liffId: "2008639538-rGDmzZy6" });
+    async function main() {
+      await liff.init({ liffId: "2008639538-rGDmzZy6" });
 
-            // 未ログインならログイン
-            if (!liff.isLoggedIn()) {
-                liff.login();
-                return;
-            }
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
 
-            document.getElementById("status").innerText = "Connected 🎉";
-            document.getElementById("profileBtn").disabled = false;
+      const profile = await liff.getProfile();
+      document.getElementById("Name").textContent = profile.displayName;
+      document.getElementById("icon").src = profile.pictureUrl;
 
-            // プロフィール取得ボタン
-            document.getElementById("profileBtn").onclick = async () => {
-                const profile = await liff.getProfile();
-                document.getElementById("welcome").innerText =
-                    "Welcome to PokeLinker, " + profile.displayName + "!!";
-                document.getElementById("icon").src = profile.pictureUrl;
-                document.getElementById("status").innerText = "Your profile loaded!";
-            };
-        }
+      await setDoc(doc(db, "users", profile.userId), {
+        name: profile.displayName,
+        icon: profile.pictureUrl
+      });
 
-        main();
-    </script>
+      console.log("Firebase save OK!");
+    }
+    main();
+  </script>
 </body>
 </html>
+
