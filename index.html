@@ -5,6 +5,7 @@
 </head>
 <body>
   <h1 id="welcome">Welcome to PokeLinker!!</h1>
+  <img id="icon" width="100" style="border-radius: 50%; background:#ddd;" />
   <p>Loading...</p>
 
   <button id="profileBtn">Show Profile</button>
@@ -12,21 +13,22 @@
   <script>
     async function main() {
 
-      // LIFF アプリの初期化
+      // LIFF 初期化
       await liff.init({ liffId: "2008639538-rGDmzZy6" });
 
-      // 未ログインならログイン処理へ
+      // 未ログインならログイン
       if (!liff.isLoggedIn()) {
         liff.login();
         return;
       }
 
-      // LINEのプロフィールを取得
+      // プロフィール取得
       const profile = await liff.getProfile();
 
-      // 英語で表示（カッコよく）
       document.getElementById("welcome").innerText =
         `Welcome to PokeLinker, ${profile.displayName}!!`;
+
+      document.getElementById("icon").src = profile.pictureUrl;
     }
 
     main();
