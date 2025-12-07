@@ -1,7 +1,35 @@
 <!DOCTYPE html>
 <html>
-  <body>
-    <h1>LIFF に入れたよ！</h1>
-    <p>これはテスト用のトップページです。</p>
-  </body>
+<head>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h1 id="welcome">Welcome to PokeLinker!!</h1>
+  <p>Loading...</p>
+
+  <button id="profileBtn">Show Profile</button>
+
+  <script>
+    async function main() {
+
+      // LIFF アプリの初期化
+      await liff.init({ liffId: "2008639538-rGDmzZy6" });
+
+      // 未ログインならログイン処理へ
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      // LINEのプロフィールを取得
+      const profile = await liff.getProfile();
+
+      // 英語で表示（カッコよく）
+      document.getElementById("welcome").innerText =
+        `Welcome to PokeLinker, ${profile.displayName}!!`;
+    }
+
+    main();
+  </script>
+</body>
 </html>
