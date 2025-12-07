@@ -1,37 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeLinker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+        }
+        #icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #eee;
+            margin: 20px auto;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #aaa;
+        }
+    </style>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-  <h1 id="welcome">Welcome to PokeLinker!!</h1>
-  <img id="icon" width="100" style="border-radius: 50%; background:#ddd;" />
-  <p>Loading...</p>
+    <h1 id="welcome">Welcome to PokeLinker!!</h1>
 
-  <button id="profileBtn">Show Profile</button>
+    <img id="icon" src="" alt="User Icon" />
 
-  <script>
-    async function main() {
+    <p id="status">Loading...</p>
 
-      // LIFF 初期化
-      await liff.init({ liffId: "2008639538-rGDmzZy6" });
+    <button id="profileBtn" disabled>Show Profile</button>
 
-      // 未ログインならログイン
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
+    <script>
+        async function main() {
+            // ★ あなたの LIFF ID をセット済み
+            await liff.init({ liffId: "2008639538-rGDmzZy6" });
 
-      // プロフィール取得
-      const profile = await liff.getProfile();
+            // 未ログインならログイン
+            if (!liff.isLoggedIn()) {
+                liff.login();
+                return;
+            }
 
-      document.getElementById("welcome").innerText =
-        `Welcome to PokeLinker, ${profile.displayName}!!`;
+            document.getElementById("status").innerText = "Connected 🎉";
+            document.getElementById("profileBtn").disabled = false;
 
-      document.getElementById("icon").src = profile.pictureUrl;
-    }
+            // プロフィール取得ボタン
+            document.getElementById("profileBtn").onclick = async () => {
+                const profile = await liff.getProfile();
+                document.getElementById("welcome").innerText =
+                    "Welcome to PokeLinker, " + profile.displayName + "!!";
+                document.getElementById("icon").src = profile.pictureUrl;
+                document.getElementById("status").innerText = "Your profile loaded!";
+            };
+        }
 
-    main();
-  </script>
+        main();
+    </script>
 </body>
 </html>
