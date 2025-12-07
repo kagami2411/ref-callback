@@ -1,13 +1,19 @@
+<!DOCTYPE html>
 <html>
   <body>
     <h1>LINEログイン成功</h1>
     <p>あなたの識別子が返ってきました。</p>
 
+    <p>code（識別子）:</p>
+    <p id="code"></p>
+
     <script>
+      // URL に ?code=xxxxx の形式で付いてくる
       const params = new URLSearchParams(window.location.search);
       const code = params.get("code");
 
-      document.write("<h3>code（識別子）:</h3>" + code);
+      document.getElementById("code").innerText = code;
     </script>
   </body>
 </html>
+
