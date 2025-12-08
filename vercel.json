@@ -1,8 +1,8 @@
 {
-  "routes": [
+  "rewrites": [
     {
-      "src": "/callback",
-      "dest": "/callback.js"
+      "source": "/callback",
+      "destination": "/api/callback"
     }
   ]
 }
