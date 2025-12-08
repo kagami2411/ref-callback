@@ -1,24 +1,9 @@
-const line = require('@line/bot-sdk');
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
 
-const config = {
-  channelAccessToken: process.env.LINE_ACCESS_TOKEN,
-  channelSecret: process.env.LINE_CHANNEL_SECRET
-};
+  console.log("Webhook Received:", req.body);
 
-const client = new line.Client(config);
-
-module.exports = async (req, res) => {
-  // LINE からのイベントを処理
-  const events = req.body.events;
-
-  await Promise.all(events.map(async (event) => {
-    if (event.type === 'message') {
-      await client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: 'プロフィール登録ありがとう！'
-      });
-    }
-  }));
-
-  res.status(200).send('ok');
-};
+  return res.status(200).json({ message: "OK" });
+}
